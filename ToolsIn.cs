@@ -6,10 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
-using nsStockManage;
 using nsDBConnection;
 
-namespace nsMainWindow
+namespace nsStockManage
 {
     class ToolsIn
     {
@@ -32,38 +31,113 @@ namespace nsMainWindow
             }
         }
 
-        //扫码回车函数
+        //二维码回车函数
         public void textBox_newToolsIn_code_KeyPress(char e)
         {
             if (e == (char)Keys.Enter)
             {
                 String text = Program.mw.textBox_newToolsIn_code.Text;
-                text = text.Remove(0, 5);
-                text = text.Replace("-序号：", "@");
-                String[] temp = text.Split('@');
-                String code = temp[0];
-                String number = temp[1];
+                String[] temp = null;
+                String code = text;
+                String number;
 
-                Program.mw.textBox_newToolsIn_code.Text = code;
-                Program.mw.textBox_newToolsIn_numberStart.Text = number;
-
-                if (Program.mw.checkBox_newToolsIn_batch.Checked == true)                          //焦点跳转
+                if (text.Contains("-序号："))                             //判断二维码是否包含编号
                 {
-                    Program.mw.textBox_newToolsIn_numberEnd.Focus();
+                    text = text.Remove(0, 5);
+                    text = text.Replace("-序号：", "@");
+                    temp = text.Split('@');
+                    code = temp[0];
+                    number = temp[1];
+
+                    if (CommonFunction.checkCodeLegality(code) && CommonFunction.checkNumberLegality(number))//二维码及编号的合法性
+                    {
+                        Program.mw.textBox_newToolsIn_code.Text = code;
+                        Program.mw.textBox_newToolsIn_numberStart.Text = number;
+
+                        String sql = "select * from tools where code='"+ code +"' order by idTools DESC limit 1";  //自动填充已知信息
+                        DBConnection connection = new DBConnection();
+                        DataSet ds = connection.Select(sql);
+                        if (ds.Tables[0].Rows[0] != null)
+                        {
+                            Program.mw.textBox_newToolsIn_materialNumber.Text = ds.Tables[0].Rows[0][3].ToString();
+                            Program.mw.textBox_newToolsIn_manufacturer.Text = ds.Tables[0].Rows[0][15].ToString();
+                            Program.mw.comboBox_newToolsIn_lifetype.Text = ds.Tables[0].Rows[0][17].ToString();
+                            Program.mw.textBox_newToolsIn_lifespan.Text = ds.Tables[0].Rows[0][18].ToString();
+                            Program.mw.textBox_newToolsIn_price.Text = ds.Tables[0].Rows[0][16].ToString();
+                            
+                            Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Black;
+                            Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
+                            Program.mw.textBox_newToolsIn_price.ForeColor = Color.Black;
+                            Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Left;
+                        }
+
+                        if (Program.mw.checkBox_newToolsIn_batch.Checked == true)                //焦点跳转
+                        {
+                            Program.mw.textBox_newToolsIn_numberEnd.Focus();
+                        }
+                        else
+                        {
+                            Program.mw.textBox_newToolsIn_materialNumber.Focus();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("二维码不合法！");
+                        Program.mw.textBox_newToolsIn_code.Text = "";
+                        Program.mw.textBox_newToolsIn_numberStart.Text = "";
+                        return;
+                    }
                 }
-                else
+                else                             //二维码不包含编号
+                {
+                    if (CommonFunction.checkCodeLegality(text) && !CommonFunction.HasChinese(text))
+                    {
+                        Program.mw.textBox_newToolsIn_numberStart.Focus();
+
+                        String sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";  //自动填充已知信息
+                        DBConnection connection = new DBConnection();
+                        DataSet ds = connection.Select(sql);
+                        if (ds.Tables[0].Rows[0] != null)
+                        {
+                            Program.mw.textBox_newToolsIn_materialNumber.Text = ds.Tables[0].Rows[0][3].ToString();
+                            Program.mw.textBox_newToolsIn_manufacturer.Text = ds.Tables[0].Rows[0][15].ToString();
+                            Program.mw.comboBox_newToolsIn_lifetype.Text = ds.Tables[0].Rows[0][17].ToString();
+                            Program.mw.textBox_newToolsIn_lifespan.Text = ds.Tables[0].Rows[0][18].ToString();
+                            Program.mw.textBox_newToolsIn_price.Text = ds.Tables[0].Rows[0][16].ToString();
+
+                            Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Black;
+                            Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
+                            Program.mw.textBox_newToolsIn_price.ForeColor = Color.Black;
+                            Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Left;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("二维码不合法！");
+                        Program.mw.textBox_newToolsIn_code.Text = "";
+                        return;
+                    }
+                }
+                
+            }
+        }
+        //结尾编码回车函数
+        public void textBox_newToolsIn_numberEnd_KeyPress(char e)
+        {
+            if (e == (char)Keys.Enter)
+            {
+                String startNumber = Program.mw.textBox_newToolsIn_numberStart.Text;
+                String endNumber = Program.mw.textBox_newToolsIn_numberEnd.Text;
+                if (CommonFunction.checkNumberEndLegality(startNumber, endNumber))
                 {
                     Program.mw.textBox_newToolsIn_materialNumber.Focus();
                 }
-
-                String sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";     //自动填充已知信息
-                DBConnection connection = new DBConnection();
-                DataSet ds = connection.Select(sql);
-                //  if(ds.Tables[0].Rows[0][0].ToString().le)
-                //  if(ds.Tables[0].Rows[0][0].ToString() != null)
-                // {
-
-                // }
+                else
+                {
+                    MessageBox.Show("编号不合法！");
+                    Program.mw.textBox_newToolsIn_numberEnd.Text = "";
+                    return;
+                }
             }
         }
         //新购工装入库界面 单价 文本框默认值函数
@@ -188,7 +262,7 @@ namespace nsMainWindow
             listview.Columns.Add("", 0, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
             listview.Columns.Add("序号", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
             listview.Columns.Add("工装二维码", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
-            listview.Columns.Add("工装编码", listViewColumnWidth, HorizontalAlignment.Center); //添加
+            listview.Columns.Add("工装编号", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("物料号", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("厂家", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
             listview.Columns.Add("单价", listViewColumnWidth, HorizontalAlignment.Center); //添加
@@ -257,59 +331,119 @@ namespace nsMainWindow
             newTools[15] = Program.mw.textBox_newToolsIn_area.Text;
             newTools[16] = Program.mw.textBox_newToolsIn_shelf.Text;
             newTools[17] = Program.mw.textBox_newToolsIn_layer.Text;
-            
-            //根据二维码获取7级类别
-            String[] classes = new String[8];
-            classes = newTools[1].Split('-');
-            //校验各字符串
-            if(classes[1] == null || classes[2] == null || classes[3] == null || classes[4] == null)
+
+            //校验各项数据
+            if (!CommonFunction.checkCodeLegality(newTools[1]))
             {
                 MessageBox.Show("二维码不合法！");
                 return false;
             }
-            if(newTools[4] == null || newTools[4].Length < 7)
+            if (!CommonFunction.checkNumberLegality(newTools[4]))
             {
                 MessageBox.Show("编号不合法！");
                 return false;
             }
+            if (Program.mw.checkBox_newToolsIn_batch.Checked)
+            {
+                if (!CommonFunction.checkNumberEndLegality(newTools[4], newTools[5]))
+                {
+                    MessageBox.Show("编号不合法！");
+                    return false;
+                }
+            }
+            
+            String[] classes = new String[8];           //根据二维码获取7级类别
+            classes = newTools[1].Split('-');
 
             String sql = @"insert into tools 
                                (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
                         values (
-                                 '" + newTools[1] + "'," +
-                                "'" + newTools[2] + "'," +
-                                "'" + newTools[3] + "'," +
-                                "'" + newTools[4] + "'," +
-                                "'" + newTools[6] + "'," +
-                                "'" + newTools[7] + "'," +
-                                "'" + newTools[8] + "'," +
-                                "'" + newTools[9] + "'," +
-                                "'" + newTools[10] + "'," +
-                                "'" + newTools[11] + "'," +
-                                "'" + newTools[12] + "'," +
-                                "'" + newTools[15] + "'," +
-                                "'" + newTools[16] + "'," +
-                                "'" + newTools[17] + "'," +
-                                "'" + classes[0] + "'," +
-                                "'" + classes[1] + "'," +
-                                "'" + classes[2] + "'," +
-                                "'" + classes[3] + "'," +
-                                "'" + classes[4] + "'," +
-                                "'" + classes[5] + "'," +
-                                "'" + classes[6] + "'," +
-                                "'" + classes[7] + "')";
-            try
+                             '" + newTools[1] + "'," +
+                            "'" + newTools[2] + "'," +
+                            "'" + newTools[3] + "'," +
+                            "'" + newTools[4] + "'," +
+                            "'" + newTools[6] + "'," +
+                            "'" + newTools[7] + "'," +
+                            "'" + newTools[8] + "'," +
+                            "'" + newTools[9] + "'," +
+                            "'" + newTools[10] + "'," +
+                            "'" + newTools[11] + "'," +
+                            "'" + newTools[12] + "'," +
+                            "'" + newTools[15] + "'," +
+                            "'" + newTools[16] + "'," +
+                            "'" + newTools[17] + "'," +
+                            "'" + classes[0] + "'," +
+                            "'" + classes[1] + "'," +
+                            "'" + classes[2] + "'," +
+                            "'" + classes[3] + "'," +
+                            "'" + classes[4] + "'," +
+                            "'" + classes[5] + "'," +
+                            "'" + classes[6] + "'," +
+                            "'" + classes[7] + "')";
+
+            if (!Program.mw.checkBox_newToolsIn_batch.Checked)              //非批量入库
             {
-                connection.Insert(sql);
-                fillListView_newToolsIn(Program.mw.listView_newToolsIn);
-                connection.Close();
-                return true;
+                try
+                {
+                    connection.Insert(sql);
+                    fillListView_newToolsIn(Program.mw.listView_newToolsIn);
+                    connection.Close();
+                    return true;
+                }
+                catch
+                {
+                    MessageBox.Show("数据保存失败！");
+                    return false;
+                }
             }
-            catch
+            else                    //批量入库
             {
-                MessageBox.Show("数据保存失败！");
-                return false;
+                String startNumber = newTools[4].Substring(newTools[4].LastIndexOf("-")+1);
+                String endNumber = newTools[5].Substring(newTools[5].LastIndexOf("-") + 1);
+                try
+                {
+                    for (int i = 1; i <= (int.Parse(endNumber) - int.Parse(startNumber) + 1); i++)
+                    {
+                        connection.Insert(sql);
+                        newTools[4] = newTools[4].Remove(newTools[4].LastIndexOf("-")+1) + (int.Parse(startNumber)+i).ToString().PadLeft(startNumber.Length,'0'); //SQL字符串需手动更新一下
+                        sql = @"insert into tools 
+                               (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
+                                values (
+                                     '" + newTools[1] + "'," +
+                                    "'" + newTools[2] + "'," +
+                                    "'" + newTools[3] + "'," +
+                                    "'" + newTools[4] + "'," +
+                                    "'" + newTools[6] + "'," +
+                                    "'" + newTools[7] + "'," +
+                                    "'" + newTools[8] + "'," +
+                                    "'" + newTools[9] + "'," +
+                                    "'" + newTools[10] + "'," +
+                                    "'" + newTools[11] + "'," +
+                                    "'" + newTools[12] + "'," +
+                                    "'" + newTools[15] + "'," +
+                                    "'" + newTools[16] + "'," +
+                                    "'" + newTools[17] + "'," +
+                                    "'" + classes[0] + "'," +
+                                    "'" + classes[1] + "'," +
+                                    "'" + classes[2] + "'," +
+                                    "'" + classes[3] + "'," +
+                                    "'" + classes[4] + "'," +
+                                    "'" + classes[5] + "'," +
+                                    "'" + classes[6] + "'," +
+                                    "'" + classes[7] + "')";
+                    }
+                    fillListView_newToolsIn(Program.mw.listView_newToolsIn);
+                    connection.Close();
+                    return true;
+                }
+                catch
+                {
+                    MessageBox.Show("数据保存失败！");
+                    return false;
+                }
+                
             }
+            
         }
         
         //清除功能

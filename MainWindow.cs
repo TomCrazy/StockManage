@@ -127,60 +127,48 @@ namespace nsMainWindow
 
         ToolsIn toolsIn = new ToolsIn();
         
-        private void checkBox_batch_CheckedChanged(object sender, EventArgs e)     //check_box状态变化
+        private void checkBox_batch_CheckedChanged(object sender, EventArgs e)              //批量入库复选框状态
         {
             toolsIn.checkBox_batch_CheckedChanged();
         }
-        private void textBox_newToolsIn_code_KeyPress(object sender, KeyPressEventArgs e)
+        private void textBox_newToolsIn_code_KeyPress(object sender, KeyPressEventArgs e)   //二维码回车处理
         {
             toolsIn.textBox_newToolsIn_code_KeyPress(e.KeyChar);
+        }
+        private void textBox_newToolsIn_numberEnd_KeyPress(object sender, KeyPressEventArgs e)   //结尾编号回车处理
+        {
+            toolsIn.textBox_newToolsIn_numberEnd_KeyPress(e.KeyChar);
         }
         private void comboBox_newToolsIn_lifetype_SelectedIndexChanged(object sender, EventArgs e)  //额定寿命类型选取
         {
             toolsIn.comboBox_newToolsIn_lifetype_SelectedIndexChanged();
         }
-        private void textBox_newToolsIn_lifespan_Enter(object sender, EventArgs e)
+        private void textBox_newToolsIn_lifespan_Enter(object sender, EventArgs e)      //额定寿命获得焦点
         {
             toolsIn.textBox_newToolsIn_lifespan_Enter();
         }
-        private void textBox_newToosIn_lifespan_Leave(object sender, EventArgs e)
+        private void textBox_newToosIn_lifespan_Leave(object sender, EventArgs e)      //额定寿命失去焦点
         {
             toolsIn.textBox_newToosIn_lifespan_Leave();
         }
-        private void textBox_newToosIn_price_Enter(object sender, EventArgs e)
+        private void textBox_newToosIn_price_Enter(object sender, EventArgs e)          //单价获得焦点
         {
             toolsIn.textBox_newToosIn_price_Enter();
         }
-        private void textBox_newToosIn_price_Leave(object sender, EventArgs e)
+        private void textBox_newToosIn_price_Leave(object sender, EventArgs e)          //单价失去焦点
         {
             toolsIn.textBox_newToosIn_price_Leave();
         }
-        private void textBox_newToosIn_operator_Enter(object sender, EventArgs e)
+        private void textBox_newToosIn_operator_Enter(object sender, EventArgs e)       //操作人获得焦点
         {
             toolsIn.textBox_newToosIn_operator_Enter();
         }
-        private void textBox_newToosIn_operator_Leave(object sender, EventArgs e)
+        private void textBox_newToosIn_operator_Leave(object sender, EventArgs e)       //操作人失去焦点
         {
             toolsIn.textBox_newToosIn_operator_Leave();
         }
-
-        //新购工装入库确定按钮
-        private void button_newToosIn_enter_Click(object sender, EventArgs e)
-        {
-            if (toolsIn.newToolsIn_enter() == true)
-            {
-                toolsIn.newToolsInCleanAll();
-                textBox_newToolsIn_code.Focus();
-            }
-        }
-        //新购工装入库清空按钮
-        private void button_newToosIn_cancel_Click(object sender, EventArgs e)
-        {
-            toolsIn.newToolsInCleanAll();
-            textBox_newToolsIn_code.Focus();
-        }
         
-        //新购工装入库界面 限制编辑框输入内容
+        ////新购工装入库界面 限制编辑框输入内容
         private void textBox_newToolsIn_lifespan_KeyPress(object sender, KeyPressEventArgs e)    //限制额定寿命编辑框只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
@@ -199,67 +187,80 @@ namespace nsMainWindow
                 e.Handled = true;
             }
         }
-        private void textBox_newToolsIn_contact_KeyPress(object sender, KeyPressEventArgs e)     //限制联系方式只能输入数字
+        /*private void textBox_newToolsIn_contact_KeyPress(object sender, KeyPressEventArgs e)     //限制联系方式只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
             {
                 e.Handled = true;
             }
+        }*/
+
+        private void button_newToosIn_enter_Click(object sender, EventArgs e)           //新购工装入库确定按钮
+        {
+            if (toolsIn.newToolsIn_enter() == true)
+            {
+                toolsIn.newToolsInCleanAll();
+                textBox_newToolsIn_code.Focus();
+            }
+        }
+        private void button_newToosIn_cancel_Click(object sender, EventArgs e)          //新购工装入库清空按钮
+        {
+            toolsIn.newToolsInCleanAll();
+            textBox_newToolsIn_code.Focus();
         }
 
         /********************************************************领用归还界面******************************************************/
 
-        //领用归还入库清空按钮
-        private void button_toolsReturn_cancel_Click(object sender, EventArgs e)
+
+        private void button_toolsReturn_cancel_Click(object sender, EventArgs e)                    //领用归还入库清空按钮
         {
             toolsIn.toolsReturnCleanALL();
             textBox_toolsReturn_code.Focus();
         }
         
-        //领用归还界面 限制编辑框输入内容
-        private void textBox_toolsReturn_return_KeyPress(object sender, KeyPressEventArgs e)               //限制归还人编辑框只能输入数字
+        ////领用归还界面 限制编辑框输入内容
+        private void textBox_toolsReturn_return_KeyPress(object sender, KeyPressEventArgs e)        //限制归还人编辑框只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
             {
                 e.Handled = true;
             }
         }
-        private void textBox_toolsReturn_contact_KeyPress(object sender, KeyPressEventArgs e)              //限制归还人联系方式编辑框只能输入数字
+        private void textBox_toolsReturn_contact_KeyPress(object sender, KeyPressEventArgs e)       //限制归还人联系方式编辑框只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
             {
                 e.Handled = true;
             }
         }
-        private void textBox_toolsReturn_operator_KeyPress(object sender, KeyPressEventArgs e)             //限制操作人编辑框只能输入数字
+        private void textBox_toolsReturn_operator_KeyPress(object sender, KeyPressEventArgs e)      //限制操作人编辑框只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
             {
                 e.Handled = true;
             }
         }
-        private void textBox_toolsReturnOperator_contact_KeyPress(object sender, KeyPressEventArgs e)      //限制操作人联系方式编辑框只能输入数字
+        /*private void textBox_toolsReturnOperator_contact_KeyPress(object sender, KeyPressEventArgs e)   //限制操作人联系方式编辑框只能输入数字
         {
             if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (Char)8)
             {
                 e.Handled = true;
             }
-        }
-        //领用归还界面 归还人 文本框默认值函数
-        private void textBox_toolsReturn_return_Enter(object sender, EventArgs e)
+        }*/
+        
+        private void textBox_toolsReturn_return_Enter(object sender, EventArgs e)       //归还人获得焦点
         {
             toolsIn.textBox_toolsReturn_return_Enter();
         }
-        private void textBox_toolsReturn_return_Leave(object sender, EventArgs e)
+        private void textBox_toolsReturn_return_Leave(object sender, EventArgs e)       //归还人失去焦点
         {
             toolsIn.textBox_toolsReturn_return_Leave();
         }
-        //领用归还界面 操作人 文本框默认值函数
-        private void textBox_toolsReturn_operator_Enter(object sender, EventArgs e)
+        private void textBox_toolsReturn_operator_Enter(object sender, EventArgs e)     //操作人获得焦点
         {
             toolsIn.textBox_toolsReturn_operator_Enter();
         }
-        private void textBox_toolsReturn_operator_Leave(object sender, EventArgs e)
+        private void textBox_toolsReturn_operator_Leave(object sender, EventArgs e)     //操作人失去焦点
         {
             toolsIn.textBox_toolsReturn_operator_Leave();
         }

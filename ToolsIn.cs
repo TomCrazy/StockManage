@@ -7,16 +7,124 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data;
 using nsDBConnection;
+using nsMainWindow;
 
 namespace nsStockManage
 {
     class ToolsIn
     {
         DBConnection connection = new DBConnection();
+        DataSet ds = null;
+        String sql = null;
 
         /*****************************************    新购工装入库界面     *************************************/
 
-        //check_box状态变化
+        //新购工装入库界面文本框默认值函数
+        public void comboBox_newToolsIn_lifetype_SelectedIndexChanged()  //额定寿命类型选取
+        {
+            if (Program.mw.comboBox_newToolsIn_lifetype.Text == "时间")
+            {
+                Program.mw.textBox_newToolsIn_lifespan.Text = "天 ";
+                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+            }
+            if (Program.mw.comboBox_newToolsIn_lifetype.Text == "次数")
+            {
+                Program.mw.textBox_newToolsIn_lifespan.Text = "次 ";
+                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+            }
+        }
+        
+        public void textBox_newToolsIn_lifespan_Enter()                 //新购工装入库界面 额定寿命 文本框默认值
+        {
+            if ((Program.mw.textBox_newToolsIn_lifespan.Text == "天 ") || (Program.mw.textBox_newToolsIn_lifespan.Text == "次 "))
+            {
+                Program.mw.textBox_newToolsIn_lifespan.Text = "";
+                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Black;
+                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
+            }
+        }
+        public void textBox_newToosIn_lifespan_Leave()
+        {
+            if ((String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_lifespan.Text)) && (Program.mw.comboBox_newToolsIn_lifetype.Text == "时间"))
+            {
+                Program.mw.textBox_newToolsIn_lifespan.Text = "天 ";
+                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+            }
+            if ((String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_lifespan.Text)) && (Program.mw.comboBox_newToolsIn_lifetype.Text == "次数"))
+            {
+                Program.mw.textBox_newToolsIn_lifespan.Text = "次 ";
+                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+            }
+        }
+        public void textBox_newToosIn_price_Enter()                 //新购工装入库界面 单价 文本框默认值
+        {
+            if (Program.mw.textBox_newToolsIn_price.Text == "元 ")
+            {
+                Program.mw.textBox_newToolsIn_price.Text = "";
+                Program.mw.textBox_newToolsIn_price.ForeColor = Color.Black;
+                Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Left;
+            }
+        }
+        public void textBox_newToosIn_price_Leave()
+        {
+            if (String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_price.Text))
+            {
+                Program.mw.textBox_newToolsIn_price.Text = "元 ";
+                Program.mw.textBox_newToolsIn_price.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Right;
+            }
+        }
+        public void textBox_newToolsIn_price_KeyPress(KeyPressEventArgs e)       //限制价格编辑框只能输入数字和小数点
+        {
+            if (((int)e.KeyChar < 48 || (int)e.KeyChar > 57) && (int)e.KeyChar != 8 && (int)e.KeyChar != 46)    //非数字和小数点不做处理
+                e.Handled = true;
+
+            if ((int)e.KeyChar == 46)                                     //小数点的处理
+            {
+                if (Program.mw.textBox_newToolsIn_lifespan.Text.Length <= 0)
+                    e.Handled = true;                                     //小数点不能在第一位
+                else
+                {
+                    float f;
+                    float oldf;
+                    bool b1 = false, b2 = false;
+                    b1 = float.TryParse(Program.mw.textBox_newToolsIn_lifespan.Text, out oldf);
+                    b2 = float.TryParse(Program.mw.textBox_newToolsIn_lifespan.Text + e.KeyChar.ToString(), out f);
+                    if (b2 == false)
+                    {
+                        if (b1 == true)
+                            e.Handled = true;
+                        else
+                            e.Handled = false;
+                    }
+                }
+            }
+        }
+
+        public void textBox_newToosIn_operator_Enter()              //新购工装入库界面 操作人 文本框默认值
+        {
+            if (Program.mw.textBox_newToolsIn_operator.Text == "员工编号 ")
+            {
+                Program.mw.textBox_newToolsIn_operator.Text = "";
+                Program.mw.textBox_newToolsIn_operator.ForeColor = Color.Black;
+                Program.mw.textBox_newToolsIn_operator.TextAlign = HorizontalAlignment.Left;
+            }
+        }
+        public void textBox_newToosIn_operator_Leave()
+        {
+            if (String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_operator.Text))
+            {
+                Program.mw.textBox_newToolsIn_operator.Text = "员工编号 ";
+                Program.mw.textBox_newToolsIn_operator.ForeColor = Color.Gray;
+                Program.mw.textBox_newToolsIn_operator.TextAlign = HorizontalAlignment.Right;
+            }
+        }
+
+        //是否批量入库状态变化函数
         public void checkBox_batch_CheckedChanged()     
         {
             if (Program.mw.checkBox_newToolsIn_batch.Checked == false)     //非批量入库
@@ -31,7 +139,7 @@ namespace nsStockManage
             }
         }
 
-        //二维码回车函数
+        //二维码文本框回车函数
         public void textBox_newToolsIn_code_KeyPress(char e)
         {
             if (e == (char)Keys.Enter)
@@ -54,9 +162,8 @@ namespace nsStockManage
                         Program.mw.textBox_newToolsIn_code.Text = code;
                         Program.mw.textBox_newToolsIn_numberStart.Text = number;
 
-                        String sql = "select * from tools where code='"+ code +"' order by idTools DESC limit 1";  //自动填充已知信息
-                        DBConnection connection = new DBConnection();
-                        DataSet ds = connection.Select(sql);
+                        sql = "select * from tools where code='"+ code +"' order by idTools DESC limit 1";  //自动填充已知信息
+                        ds = connection.Select(sql);
                         if (ds.Tables[0].Rows[0] != null)
                         {
                             Program.mw.textBox_newToolsIn_materialNumber.Text = ds.Tables[0].Rows[0][3].ToString();
@@ -94,9 +201,8 @@ namespace nsStockManage
                     {
                         Program.mw.textBox_newToolsIn_numberStart.Focus();
 
-                        String sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";  //自动填充已知信息
-                        DBConnection connection = new DBConnection();
-                        DataSet ds = connection.Select(sql);
+                        sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";  //自动填充已知信息
+                        ds = connection.Select(sql);
                         if (ds.Tables[0].Rows[0] != null)
                         {
                             Program.mw.textBox_newToolsIn_materialNumber.Text = ds.Tables[0].Rows[0][3].ToString();
@@ -121,6 +227,7 @@ namespace nsStockManage
                 
             }
         }
+
         //结尾编码回车函数
         public void textBox_newToolsIn_numberEnd_KeyPress(char e)
         {
@@ -137,111 +244,6 @@ namespace nsStockManage
                     MessageBox.Show("编号不合法！");
                     Program.mw.textBox_newToolsIn_numberEnd.Text = "";
                     return;
-                }
-            }
-        }
-        //新购工装入库界面 单价 文本框默认值函数
-        public void comboBox_newToolsIn_lifetype_SelectedIndexChanged()  //额定寿命类型选取
-        {
-            if (Program.mw.comboBox_newToolsIn_lifetype.Text == "时间")
-            {
-                Program.mw.textBox_newToolsIn_lifespan.Text = "天 ";
-                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
-            }
-            if (Program.mw.comboBox_newToolsIn_lifetype.Text == "次数")
-            {
-                Program.mw.textBox_newToolsIn_lifespan.Text = "次 ";
-                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
-            }
-        }
-
-        public void textBox_newToolsIn_lifespan_Enter()
-        {
-            if ((Program.mw.textBox_newToolsIn_lifespan.Text == "天 ") || (Program.mw.textBox_newToolsIn_lifespan.Text == "次 "))
-            {
-                Program.mw.textBox_newToolsIn_lifespan.Text = "";
-                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Black;
-                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
-            }
-        }
-
-        public void textBox_newToosIn_lifespan_Leave()
-        {
-            if ((String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_lifespan.Text)) && (Program.mw.comboBox_newToolsIn_lifetype.Text == "时间"))
-            {
-                Program.mw.textBox_newToolsIn_lifespan.Text = "天 ";
-                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
-            }
-            if ((String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_lifespan.Text)) && (Program.mw.comboBox_newToolsIn_lifetype.Text == "次数"))
-            {
-                Program.mw.textBox_newToolsIn_lifespan.Text = "次 ";
-                Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
-            }
-        }
-        public void textBox_newToosIn_price_Enter()
-        {
-            if (Program.mw.textBox_newToolsIn_price.Text == "元 ")
-            {
-                Program.mw.textBox_newToolsIn_price.Text = "";
-                Program.mw.textBox_newToolsIn_price.ForeColor = Color.Black;
-                Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Left;
-            }
-        }
-        public void textBox_newToosIn_price_Leave()
-        {
-            if (String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_price.Text))
-            {
-                Program.mw.textBox_newToolsIn_price.Text = "元 ";
-                Program.mw.textBox_newToolsIn_price.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_price.TextAlign = HorizontalAlignment.Right;
-            }
-        }
-        //新购工装入库界面 操作人 文本框默认值函数
-        public void textBox_newToosIn_operator_Enter()
-        {
-            if (Program.mw.textBox_newToolsIn_operator.Text == "员工编号 ")
-            {
-                Program.mw.textBox_newToolsIn_operator.Text = "";
-                Program.mw.textBox_newToolsIn_operator.ForeColor = Color.Black;
-                Program.mw.textBox_newToolsIn_operator.TextAlign = HorizontalAlignment.Left;
-            }
-        }
-        public void textBox_newToosIn_operator_Leave()
-        {
-            if (String.IsNullOrEmpty(Program.mw.textBox_newToolsIn_operator.Text))
-            {
-                Program.mw.textBox_newToolsIn_operator.Text = "员工编号 ";
-                Program.mw.textBox_newToolsIn_operator.ForeColor = Color.Gray;
-                Program.mw.textBox_newToolsIn_operator.TextAlign = HorizontalAlignment.Right;
-            }
-        }
-        public void textBox_newToolsIn_price_KeyPress(KeyPressEventArgs e)       //限制价格编辑框只能输入数字和小数点
-        {
-            if (((int)e.KeyChar < 48 || (int)e.KeyChar > 57) && (int)e.KeyChar != 8 && (int)e.KeyChar != 46)    //非数字和小数点不做处理
-                e.Handled = true;
-
-            if ((int)e.KeyChar == 46)                                     //小数点的处理
-            {
-                if (Program.mw.textBox_newToolsIn_lifespan.Text.Length <= 0)
-                    e.Handled = true;                                     //小数点不能在第一位
-                else
-                {
-                    float f;
-                    float oldf;
-                    bool b1 = false, b2 = false;
-                    b1 = float.TryParse(Program.mw.textBox_newToolsIn_lifespan.Text, out oldf);
-                    b2 = float.TryParse(Program.mw.textBox_newToolsIn_lifespan.Text + e.KeyChar.ToString(), out f);
-                    if (b2 == false)
-                    {
-                        if (b1 == true)
-                            e.Handled = true;
-                        else
-                            e.Handled = false;
-                    }
                 }
             }
         }
@@ -268,7 +270,6 @@ namespace nsStockManage
             listview.Columns.Add("单价", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("额定寿命", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("购入日期", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
-            
             listview.Columns.Add("操作人", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("姓名", listViewColumnWidth, HorizontalAlignment.Center); //添加
             listview.Columns.Add("联系方式", listViewColumnWidth, HorizontalAlignment.Center); //添加
@@ -283,8 +284,8 @@ namespace nsStockManage
         public void fillListView_newToolsIn(ListView listview)
         {
             listview.Items.Clear();
-            String sql = "select * from tools order by idTools DESC limit 20";
-            DataSet ds = connection.Select(sql);
+            sql = "select * from tools order by idTools DESC limit 20";
+            ds = connection.Select(sql);
             int i = 1;
             foreach (DataRow row in ds.Tables[0].Rows)
             {
@@ -299,8 +300,8 @@ namespace nsStockManage
                 lvi.SubItems.Add(row[18].ToString());
                 lvi.SubItems.Add(row[22].ToString());
                 lvi.SubItems.Add(row[11].ToString());
-                lvi.SubItems.Add(row[11].ToString());
-                lvi.SubItems.Add(row[11].ToString());
+                lvi.SubItems.Add(row[11].ToString());           //*
+                lvi.SubItems.Add(row[11].ToString());           //*
                 lvi.SubItems.Add(row[33].ToString());
                 listview.Items.Add(lvi);
                 i++;
@@ -318,7 +319,7 @@ namespace nsStockManage
             newTools[2] = Program.mw.textBox_newToolsIn_remarks.Text;
             newTools[3] = Program.mw.comboBox_newToolsIn_functionState.Text;
             newTools[4] = Program.mw.textBox_newToolsIn_numberStart.Text;
-            newTools[5] = Program.mw.textBox_newToolsIn_numberEnd.Text;                //*
+            newTools[5] = Program.mw.textBox_newToolsIn_numberEnd.Text;
             newTools[6] = Program.mw.textBox_newToolsIn_materialNumber.Text;
             newTools[7] = Program.mw.textBox_newToolsIn_manufacturer.Text;
             newTools[8] = Program.mw.dateTimePicker_newToolsIn_purchaseDate.Text;
@@ -326,8 +327,8 @@ namespace nsStockManage
             newTools[10] = Program.mw.textBox_newToolsIn_lifespan.Text;
             newTools[11] = Program.mw.textBox_newToolsIn_price.Text;
             newTools[12] = Program.mw.textBox_newToolsIn_operator.Text;
-            newTools[13] = Program.mw.textBox_newToolsIn_name.Text;                    //*
-            newTools[14] = Program.mw.textBox_newToolsIn_contact.Text;                 //*
+            newTools[13] = Program.mw.textBox_newToolsIn_name.Text;                    //*未添加至数据库
+            newTools[14] = Program.mw.textBox_newToolsIn_contact.Text;                 //*未添加至数据库
             newTools[15] = Program.mw.textBox_newToolsIn_area.Text;
             newTools[16] = Program.mw.textBox_newToolsIn_shelf.Text;
             newTools[17] = Program.mw.textBox_newToolsIn_layer.Text;
@@ -355,37 +356,66 @@ namespace nsStockManage
             String[] classes = new String[8];           //根据二维码获取7级类别
             classes = newTools[1].Split('-');
 
-            String sql = @"insert into tools 
-                               (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
-                        values (
-                             '" + newTools[1] + "'," +
-                            "'" + newTools[2] + "'," +
-                            "'" + newTools[3] + "'," +
-                            "'" + newTools[4] + "'," +
-                            "'" + newTools[6] + "'," +
-                            "'" + newTools[7] + "'," +
-                            "'" + newTools[8] + "'," +
-                            "'" + newTools[9] + "'," +
-                            "'" + newTools[10] + "'," +
-                            "'" + newTools[11] + "'," +
-                            "'" + newTools[12] + "'," +
-                            "'" + newTools[15] + "'," +
-                            "'" + newTools[16] + "'," +
-                            "'" + newTools[17] + "'," +
-                            "'" + classes[0] + "'," +
-                            "'" + classes[1] + "'," +
-                            "'" + classes[2] + "'," +
-                            "'" + classes[3] + "'," +
-                            "'" + classes[4] + "'," +
-                            "'" + classes[5] + "'," +
-                            "'" + classes[6] + "'," +
-                            "'" + classes[7] + "')";
-
             if (!Program.mw.checkBox_newToolsIn_batch.Checked)              //非批量入库
             {
                 try
                 {
+                    sql = @"insert into tools 
+                       (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
+                        values (
+                                 '" + newTools[1] + "'," +
+                                "'" + newTools[2] + "'," +
+                                "'" + newTools[3] + "'," +
+                                "'" + newTools[4] + "'," +
+                                "'" + newTools[6] + "'," +
+                                "'" + newTools[7] + "'," +
+                                "'" + newTools[8] + "'," +
+                                "'" + newTools[9] + "'," +
+                                "'" + newTools[10] + "'," +
+                                "'" + newTools[11] + "'," +
+                                "'" + newTools[12] + "'," +
+                                "'" + newTools[15] + "'," +
+                                "'" + newTools[16] + "'," +
+                                "'" + newTools[17] + "'," +
+                                "'" + classes[0] + "'," +
+                                "'" + classes[1] + "'," +
+                                "'" + classes[2] + "'," +
+                                "'" + classes[3] + "'," +
+                                "'" + classes[4] + "'," +
+                                "'" + classes[5] + "'," +
+                                "'" + classes[6] + "'," +
+                                "'" + classes[7] + "')";
+
                     connection.Insert(sql);
+
+                    sql = @"insert into records 
+                       (code,number,materialNumber,area,shelf,layer,functionState,lifetype,lifespan,lifeleft,class1,class2,class3,class4,class5,class6,class7,version,operationType,operationDate,operationTime,operator,username,remarks) 
+                        values (
+                                 '" + newTools[1] + "'," +
+                                "'" + newTools[4] + "'," +
+                                "'" + newTools[6] + "'," +
+                                "'" + newTools[15] + "'," +
+                                "'" + newTools[16] + "'," +
+                                "'" + newTools[17] + "'," +
+                                "'" + newTools[3] + "'," +
+                                "'" + newTools[9] + "'," +
+                                "'" + newTools[10] + "'," +
+                                //lifeleft
+                                "'" + classes[0] + "'," +
+                                "'" + classes[1] + "'," +
+                                "'" + classes[2] + "'," +
+                                "'" + classes[3] + "'," +
+                                "'" + classes[4] + "'," +
+                                "'" + classes[5] + "'," +
+                                "'" + classes[6] + "'," +
+                                "'" + classes[7] + "'," +
+                                "'" + "新购入库" + "'," +
+                                "'" + DateTime.Now.ToString("yyyy-MM-dd") +"'" +
+                                "'" + DateTime.Now.ToString("hh:mm:ss") + "'" +
+                                "'" + newTools[12] + "'," +
+                                "'" + MainWindow.TerminalNumber + "'," +
+                                "'" + newTools[2] + "')";
+
                     fillListView_newToolsIn(Program.mw.listView_newToolsIn);
                     connection.Close();
                     return true;
@@ -409,28 +439,28 @@ namespace nsStockManage
                         sql = @"insert into tools 
                                (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
                                 values (
-                                     '" + newTools[1] + "'," +
-                                    "'" + newTools[2] + "'," +
-                                    "'" + newTools[3] + "'," +
-                                    "'" + newTools[4] + "'," +
-                                    "'" + newTools[6] + "'," +
-                                    "'" + newTools[7] + "'," +
-                                    "'" + newTools[8] + "'," +
-                                    "'" + newTools[9] + "'," +
-                                    "'" + newTools[10] + "'," +
-                                    "'" + newTools[11] + "'," +
-                                    "'" + newTools[12] + "'," +
-                                    "'" + newTools[15] + "'," +
-                                    "'" + newTools[16] + "'," +
-                                    "'" + newTools[17] + "'," +
-                                    "'" + classes[0] + "'," +
-                                    "'" + classes[1] + "'," +
-                                    "'" + classes[2] + "'," +
-                                    "'" + classes[3] + "'," +
-                                    "'" + classes[4] + "'," +
-                                    "'" + classes[5] + "'," +
-                                    "'" + classes[6] + "'," +
-                                    "'" + classes[7] + "')";
+                                         '" + newTools[1] + "'," +
+                                        "'" + newTools[2] + "'," +
+                                        "'" + newTools[3] + "'," +
+                                        "'" + newTools[4] + "'," +
+                                        "'" + newTools[6] + "'," +
+                                        "'" + newTools[7] + "'," +
+                                        "'" + newTools[8] + "'," +
+                                        "'" + newTools[9] + "'," +
+                                        "'" + newTools[10] + "'," +
+                                        "'" + newTools[11] + "'," +
+                                        "'" + newTools[12] + "'," +
+                                        "'" + newTools[15] + "'," +
+                                        "'" + newTools[16] + "'," +
+                                        "'" + newTools[17] + "'," +
+                                        "'" + classes[0] + "'," +
+                                        "'" + classes[1] + "'," +
+                                        "'" + classes[2] + "'," +
+                                        "'" + classes[3] + "'," +
+                                        "'" + classes[4] + "'," +
+                                        "'" + classes[5] + "'," +
+                                        "'" + classes[6] + "'," +
+                                        "'" + classes[7] + "')";
                     }
                     fillListView_newToolsIn(Program.mw.listView_newToolsIn);
                     connection.Close();
@@ -478,7 +508,7 @@ namespace nsStockManage
         }
 
 
-        /********************************************************领用归还界面******************************************************/
+        /**************************************************     领用归还界面      ************************************************/
 
         //清除功能
         public void toolsReturnCleanALL()

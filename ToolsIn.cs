@@ -19,6 +19,7 @@ namespace nsStockManage
 
         /*****************************************    新购工装入库界面     *************************************/
 
+
         //新购工装入库界面文本框默认值函数
         public void comboBox_newToolsIn_lifetype_SelectedIndexChanged()  //额定寿命类型选取
         {
@@ -363,6 +364,7 @@ namespace nsStockManage
                     sql = @"insert into tools 
                        (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
                         values (
+
                                  '" + newTools[1] + "'," +
                                 "'" + newTools[2] + "'," +
                                 "'" + newTools[3] + "'," +
@@ -416,6 +418,7 @@ namespace nsStockManage
                                 "'" + MainWindow.TerminalNumber + "'," +
                                 "'" + newTools[2] + "')";
 
+                    connection.Insert(sql);
                     fillListView_newToolsIn(Program.mw.listView_newToolsIn);
                     connection.Close();
                     return true;
@@ -461,6 +464,7 @@ namespace nsStockManage
                                         "'" + classes[5] + "'," +
                                         "'" + classes[6] + "'," +
                                         "'" + classes[7] + "')";
+
                     }
                     fillListView_newToolsIn(Program.mw.listView_newToolsIn);
                     connection.Close();

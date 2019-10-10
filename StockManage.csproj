@@ -71,6 +71,7 @@
     <Compile Include="ClientManage.Designer.cs">
       <DependentUpon>ClientManage.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommonFunction.cs" />
     <Compile Include="ConnectMySql.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>

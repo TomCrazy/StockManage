@@ -484,7 +484,6 @@
             this.textBox_newToolsIn_contact.Name = "textBox_newToolsIn_contact";
             this.textBox_newToolsIn_contact.Size = new System.Drawing.Size(103, 23);
             this.textBox_newToolsIn_contact.TabIndex = 14;
-            this.textBox_newToolsIn_contact.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_newToolsIn_contact_KeyPress);
             // 
             // textBox_newToolsIn_name
             // 
@@ -656,6 +655,7 @@
             this.textBox_newToolsIn_numberEnd.Name = "textBox_newToolsIn_numberEnd";
             this.textBox_newToolsIn_numberEnd.Size = new System.Drawing.Size(263, 23);
             this.textBox_newToolsIn_numberEnd.TabIndex = 4;
+            this.textBox_newToolsIn_numberEnd.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_newToolsIn_numberEnd_KeyPress);
             // 
             // label_newToolsIn_name
             // 
@@ -974,7 +974,6 @@
             this.textBox_toolsReturnOperator_contact.Name = "textBox_toolsReturnOperator_contact";
             this.textBox_toolsReturnOperator_contact.Size = new System.Drawing.Size(124, 23);
             this.textBox_toolsReturnOperator_contact.TabIndex = 32;
-            this.textBox_toolsReturnOperator_contact.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox_toolsReturnOperator_contact_KeyPress);
             // 
             // textBox_toolsReturn_contact
             // 
@@ -1638,8 +1637,8 @@
             this.BackColor = System.Drawing.Color.Lavender;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(1130, 562);
-            this.Controls.Add(this.panel_toolsReturn);
             this.Controls.Add(this.panel_newtoolsIn);
+            this.Controls.Add(this.panel_toolsReturn);
             this.Controls.Add(this.panel_repairtoolsIn);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);

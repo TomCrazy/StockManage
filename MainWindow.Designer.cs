@@ -376,7 +376,7 @@
             this.listView_newToolsIn.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.listView_newToolsIn.Location = new System.Drawing.Point(22, 230);
             this.listView_newToolsIn.Name = "listView_newToolsIn";
-            this.listView_newToolsIn.Size = new System.Drawing.Size(500, 195);
+            this.listView_newToolsIn.Size = new System.Drawing.Size(993, 240);
             this.listView_newToolsIn.TabIndex = 21;
             this.listView_newToolsIn.UseCompatibleStateImageBehavior = false;
             // 
@@ -821,7 +821,7 @@
             // 
             this.listView_toolsReturn.Location = new System.Drawing.Point(21, 214);
             this.listView_toolsReturn.Name = "listView_toolsReturn";
-            this.listView_toolsReturn.Size = new System.Drawing.Size(339, 211);
+            this.listView_toolsReturn.Size = new System.Drawing.Size(923, 224);
             this.listView_toolsReturn.TabIndex = 46;
             this.listView_toolsReturn.UseCompatibleStateImageBehavior = false;
             // 

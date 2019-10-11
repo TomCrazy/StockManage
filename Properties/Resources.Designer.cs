@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace StockManage.Properties
+namespace nsMainWindow.Properties
 {
 
 

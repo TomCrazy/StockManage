@@ -29,11 +29,12 @@ namespace nsStockManage
                 Program.mw.panel_newtoolsIn.Visible = true;
                 Program.mw.panel_toolsReturn.Visible = false;
                 Program.mw.panel_repairtoolsIn.Visible = false;
+                Program.mw.panel_outByTools.Visible = false;
 
                 if (Program.mw.checkBox_newToolsIn_batch.Checked == false)                                  //非批量入库
                 {
-                    Program.mw.textBox_newToolsIn_numberEnd.BackColor = System.Drawing.Color.LightGray;     //结尾编码变灰
-                    Program.mw.textBox_newToolsIn_numberEnd.ReadOnly = true;                                //结尾编码只读
+                    Program.mw.textBox_newToolsIn_codeEnd.BackColor = System.Drawing.Color.LightGray;     //结尾编码变灰
+                    Program.mw.textBox_newToolsIn_codeEnd.ReadOnly = true;                                //结尾编码只读
                 }
                 Program.mw.textBox_newToolsIn_code.Focus();                                                 //默认焦点置于二维码输入框
 
@@ -41,6 +42,40 @@ namespace nsStockManage
                 ti.drawListView_newToolsIn(Program.mw.listView_newToolsIn);
                 ti.fillListView_newToolsIn(Program.mw.listView_newToolsIn);
             }
+            if(Program.mw.toolStripButton1.Text == "工装方式")
+            {
+                Program.mw.panel_newtoolsIn.Visible = false;
+                Program.mw.panel_toolsReturn.Visible = false;
+                Program.mw.panel_repairtoolsIn.Visible = false;
+                Program.mw.panel_outByTools.Visible = true;
+
+                int listViewWidth = Screen.PrimaryScreen.Bounds.Width - Program.mw.listView_repairtoolsIn.Location.X * 2 - Program.mw.toolStrip1.Width;
+                int listViewHeight = Screen.PrimaryScreen.Bounds.Height - Program.mw.listView_repairtoolsIn.Location.Y - Program.mw.statusStrip1.Height - Program.mw.menuStrip1.Height - 85;
+                int listViewColumnWidth = listViewWidth / 15;
+                Program.mw.listView_outByTools.Size = new System.Drawing.Size(listViewWidth, listViewHeight);
+                Program.mw.listView_outByTools.Font = new System.Drawing.Font("微软雅黑", 8F);
+                Program.mw.listView_outByTools.GridLines = true;
+                Program.mw.listView_outByTools.View = View.Details;
+                Program.mw.listView_outByTools.HeaderStyle = ColumnHeaderStyle.Clickable;//表头样式
+                Program.mw.listView_outByTools.FullRowSelect = true;//表示在控件上，是否可以选择一整行
+                Program.mw.listView_outByTools.Columns.Add("", 0, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("工装编码", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("工装名称", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("物料号", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("功能状态", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("领用线体", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("领用工位", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("用途", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("库位", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("架位", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("层位", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("领用人", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("领用人姓名", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("领用人联系方式", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_outByTools.Columns.Add("厂家", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_outByTools.Columns.Add("备注", listViewWidth - listViewColumnWidth * 14, HorizontalAlignment.Center);
+            }
+
         }
 
         public void toolStripButton2_Click()  //toolStrip第二个按钮
@@ -78,6 +113,7 @@ namespace nsStockManage
                 Program.mw.panel_toolsReturn.Visible = true;
                 Program.mw.panel_newtoolsIn.Visible = false;
                 Program.mw.panel_repairtoolsIn.Visible = false;
+                Program.mw.panel_outByTools.Visible = false;
 
                 int listViewWidth = Screen.PrimaryScreen.Bounds.Width - Program.mw.listView_toolsReturn.Location.X * 2 - Program.mw.toolStrip1.Width;
                 int listViewHeight = Screen.PrimaryScreen.Bounds.Height - Program.mw.listView_toolsReturn.Location.Y - Program.mw.statusStrip1.Height - Program.mw.menuStrip1.Height - 85;
@@ -113,6 +149,7 @@ namespace nsStockManage
             {
                 Program.mw.panel_toolsReturn.Visible = false;
                 Program.mw.panel_newtoolsIn.Visible = false;
+                Program.mw.panel_outByTools.Visible = false;
                 Program.mw.panel_repairtoolsIn.Visible = true;
 
                 int listViewWidth = Screen.PrimaryScreen.Bounds.Width - Program.mw.listView_repairtoolsIn.Location.X * 2 - Program.mw.toolStrip1.Width;
@@ -125,8 +162,8 @@ namespace nsStockManage
                 Program.mw.listView_repairtoolsIn.HeaderStyle = ColumnHeaderStyle.Clickable;//表头样式
                 Program.mw.listView_repairtoolsIn.FullRowSelect = true;//表示在控件上，是否可以选择一整行
                 Program.mw.listView_repairtoolsIn.Columns.Add("", 0, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
-                Program.mw.listView_repairtoolsIn.Columns.Add("工装二维码", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
-                Program.mw.listView_repairtoolsIn.Columns.Add("工装编码", listViewColumnWidth, HorizontalAlignment.Center); //添加
+                Program.mw.listView_repairtoolsIn.Columns.Add("工装编码", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
+                Program.mw.listView_repairtoolsIn.Columns.Add("工装名称", listViewColumnWidth, HorizontalAlignment.Center); //添加
                 Program.mw.listView_repairtoolsIn.Columns.Add("物料号", listViewColumnWidth, HorizontalAlignment.Center); //添加
                 Program.mw.listView_repairtoolsIn.Columns.Add("功能状态", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
                 Program.mw.listView_repairtoolsIn.Columns.Add("额定寿命", listViewColumnWidth, HorizontalAlignment.Center); //添加（列宽度、列的对齐方式）
@@ -142,6 +179,5 @@ namespace nsStockManage
                 Program.mw.listView_repairtoolsIn.Columns.Add("备注", listViewWidth - listViewColumnWidth * 14, HorizontalAlignment.Center);
             }
         }
-
     }
 }

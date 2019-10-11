@@ -9,6 +9,7 @@ using System.Data;
 using nsDBConnection;
 using nsMainWindow;
 
+//工装入库类
 namespace nsStockManage
 {
     class ToolsIn
@@ -36,7 +37,7 @@ namespace nsStockManage
                 Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
             }
         }
-        
+
         public void textBox_newToolsIn_lifespan_Enter()                 //新购工装入库界面 额定寿命 文本框默认值
         {
             if ((Program.mw.textBox_newToolsIn_lifespan.Text == "天 ") || (Program.mw.textBox_newToolsIn_lifespan.Text == "次 "))
@@ -126,17 +127,17 @@ namespace nsStockManage
         }
 
         //是否批量入库状态变化函数
-        public void checkBox_batch_CheckedChanged()     
+        public void checkBox_batch_CheckedChanged()
         {
             if (Program.mw.checkBox_newToolsIn_batch.Checked == false)     //非批量入库
             {
-                Program.mw.textBox_newToolsIn_numberEnd.BackColor = System.Drawing.Color.LightGray;     //结尾编码变灰
-                Program.mw.textBox_newToolsIn_numberEnd.ReadOnly = true;                                //结尾编码只读
+                Program.mw.textBox_newToolsIn_codeEnd.BackColor = System.Drawing.Color.LightGray;     //结尾编码变灰
+                Program.mw.textBox_newToolsIn_codeEnd.ReadOnly = true;                                //结尾编码只读
             }
             if (Program.mw.checkBox_newToolsIn_batch.Checked == true)     //批量入库
             {
-                Program.mw.textBox_newToolsIn_numberEnd.BackColor = Color.White;                        //结尾编码变白 
-                Program.mw.textBox_newToolsIn_numberEnd.ReadOnly = false;                              //结尾编码可编辑
+                Program.mw.textBox_newToolsIn_codeEnd.BackColor = Color.White;                        //结尾编码变白 
+                Program.mw.textBox_newToolsIn_codeEnd.ReadOnly = false;                              //结尾编码可编辑
             }
         }
 
@@ -161,9 +162,9 @@ namespace nsStockManage
                     if (CommonFunction.checkCodeLegality(code) && CommonFunction.checkNumberLegality(number))//二维码及编号的合法性
                     {
                         Program.mw.textBox_newToolsIn_code.Text = code;
-                        Program.mw.textBox_newToolsIn_numberStart.Text = number;
+                        Program.mw.textBox_newToolsIn_toolName.Text = number;
 
-                        sql = "select * from tools where code='"+ code +"' order by idTools DESC limit 1";  //自动填充已知信息
+                        sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";  //自动填充已知信息
                         ds = connection.Select(sql);
                         if (ds.Tables[0].Rows[0] != null)
                         {
@@ -172,7 +173,7 @@ namespace nsStockManage
                             Program.mw.comboBox_newToolsIn_lifetype.Text = ds.Tables[0].Rows[0][17].ToString();
                             Program.mw.textBox_newToolsIn_lifespan.Text = ds.Tables[0].Rows[0][18].ToString();
                             Program.mw.textBox_newToolsIn_price.Text = ds.Tables[0].Rows[0][16].ToString();
-                            
+
                             Program.mw.textBox_newToolsIn_lifespan.ForeColor = Color.Black;
                             Program.mw.textBox_newToolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
                             Program.mw.textBox_newToolsIn_price.ForeColor = Color.Black;
@@ -181,7 +182,7 @@ namespace nsStockManage
 
                         if (Program.mw.checkBox_newToolsIn_batch.Checked == true)                //焦点跳转
                         {
-                            Program.mw.textBox_newToolsIn_numberEnd.Focus();
+                            Program.mw.textBox_newToolsIn_codeEnd.Focus();
                         }
                         else
                         {
@@ -192,7 +193,7 @@ namespace nsStockManage
                     {
                         MessageBox.Show("二维码不合法！");
                         Program.mw.textBox_newToolsIn_code.Text = "";
-                        Program.mw.textBox_newToolsIn_numberStart.Text = "";
+                        Program.mw.textBox_newToolsIn_toolName.Text = "";
                         return;
                     }
                 }
@@ -200,7 +201,7 @@ namespace nsStockManage
                 {
                     if (CommonFunction.checkCodeLegality(text) && !CommonFunction.HasChinese(text))
                     {
-                        Program.mw.textBox_newToolsIn_numberStart.Focus();
+                        Program.mw.textBox_newToolsIn_toolName.Focus();
 
                         sql = "select * from tools where code='" + code + "' order by idTools DESC limit 1";  //自动填充已知信息
                         ds = connection.Select(sql);
@@ -225,7 +226,7 @@ namespace nsStockManage
                         return;
                     }
                 }
-                
+
             }
         }
 
@@ -234,8 +235,8 @@ namespace nsStockManage
         {
             if (e == (char)Keys.Enter)
             {
-                String startNumber = Program.mw.textBox_newToolsIn_numberStart.Text;
-                String endNumber = Program.mw.textBox_newToolsIn_numberEnd.Text;
+                String startNumber = Program.mw.textBox_newToolsIn_toolName.Text;
+                String endNumber = Program.mw.textBox_newToolsIn_codeEnd.Text;
                 if (CommonFunction.checkNumberEndLegality(startNumber, endNumber))
                 {
                     Program.mw.textBox_newToolsIn_materialNumber.Focus();
@@ -243,7 +244,7 @@ namespace nsStockManage
                 else
                 {
                     MessageBox.Show("编号不合法！");
-                    Program.mw.textBox_newToolsIn_numberEnd.Text = "";
+                    Program.mw.textBox_newToolsIn_codeEnd.Text = "";
                     return;
                 }
             }
@@ -292,7 +293,7 @@ namespace nsStockManage
             {
                 ListViewItem lvi = new ListViewItem();
                 lvi.Text = "";
-                lvi.SubItems.Add(i.ToString()); 
+                lvi.SubItems.Add(i.ToString());
                 lvi.SubItems.Add(row[1].ToString());
                 lvi.SubItems.Add(row[2].ToString());
                 lvi.SubItems.Add(row[3].ToString());
@@ -319,8 +320,8 @@ namespace nsStockManage
             newTools[1] = Program.mw.textBox_newToolsIn_code.Text;
             newTools[2] = Program.mw.textBox_newToolsIn_remarks.Text;
             newTools[3] = Program.mw.comboBox_newToolsIn_functionState.Text;
-            newTools[4] = Program.mw.textBox_newToolsIn_numberStart.Text;
-            newTools[5] = Program.mw.textBox_newToolsIn_numberEnd.Text;
+            newTools[4] = Program.mw.textBox_newToolsIn_toolName.Text;
+            newTools[5] = Program.mw.textBox_newToolsIn_codeEnd.Text;
             newTools[6] = Program.mw.textBox_newToolsIn_materialNumber.Text;
             newTools[7] = Program.mw.textBox_newToolsIn_manufacturer.Text;
             newTools[8] = Program.mw.dateTimePicker_newToolsIn_purchaseDate.Text;
@@ -353,7 +354,7 @@ namespace nsStockManage
                     return false;
                 }
             }
-            
+
             String[] classes = new String[8];           //根据二维码获取7级类别
             classes = newTools[1].Split('-');
 
@@ -412,7 +413,7 @@ namespace nsStockManage
                                 "'" + classes[6] + "'," +
                                 "'" + classes[7] + "'," +
                                 "'" + "新购入库" + "'," +
-                                "'" + DateTime.Now.ToString("yyyy-MM-dd") +"'" +
+                                "'" + DateTime.Now.ToString("yyyy-MM-dd") + "'" +
                                 "'" + DateTime.Now.ToString("hh:mm:ss") + "'" +
                                 "'" + newTools[12] + "'," +
                                 "'" + MainWindow.TerminalNumber + "'," +
@@ -431,14 +432,14 @@ namespace nsStockManage
             }
             else                    //批量入库
             {
-                String startNumber = newTools[4].Substring(newTools[4].LastIndexOf("-")+1);
+                String startNumber = newTools[4].Substring(newTools[4].LastIndexOf("-") + 1);
                 String endNumber = newTools[5].Substring(newTools[5].LastIndexOf("-") + 1);
                 try
                 {
                     for (int i = 1; i <= (int.Parse(endNumber) - int.Parse(startNumber) + 1); i++)
                     {
                         connection.Insert(sql);
-                        newTools[4] = newTools[4].Remove(newTools[4].LastIndexOf("-")+1) + (int.Parse(startNumber)+i).ToString().PadLeft(startNumber.Length,'0'); //SQL字符串需手动更新一下
+                        newTools[4] = newTools[4].Remove(newTools[4].LastIndexOf("-") + 1) + (int.Parse(startNumber) + i).ToString().PadLeft(startNumber.Length, '0'); //SQL字符串需手动更新一下
                         sql = @"insert into tools 
                                (code,remarks,functionState,number,materialNumber,manufacturer,purchaseDate,lifetype,lifespan,price,operator,area,shelf,layer,class1,class2,class3,class4,class5,class6,class7,version) 
                                 values (
@@ -475,11 +476,11 @@ namespace nsStockManage
                     MessageBox.Show("数据保存失败！");
                     return false;
                 }
-                
+
             }
-            
+
         }
-        
+
         //清除功能
         public void newToolsInCleanAll()
         {
@@ -494,10 +495,10 @@ namespace nsStockManage
             Program.mw.textBox_newToolsIn_area.Text = "";
             Program.mw.textBox_newToolsIn_shelf.Text = "";
             Program.mw.textBox_newToolsIn_layer.Text = "";
-            Program.mw.textBox_newToolsIn_numberStart.Text = "";
+            Program.mw.textBox_newToolsIn_toolName.Text = "";
             Program.mw.textBox_newToolsIn_code.Text = "";
             Program.mw.textBox_newToolsIn_remarks.Text = "";
-            Program.mw.textBox_newToolsIn_numberEnd.Text = "";
+            Program.mw.textBox_newToolsIn_codeEnd.Text = "";
             Program.mw.comboBox_newToolsIn_functionState.Text = "正常";
             Program.mw.comboBox_newToolsIn_lifetype.Text = "时间";
             Program.mw.textBox_newToolsIn_lifespan.Text = "天 ";
@@ -512,7 +513,7 @@ namespace nsStockManage
         }
 
 
-        /**************************************************     领用归还界面      ************************************************/
+        /********************************************************领用归还界面******************************************************/
 
         //清除功能
         public void toolsReturnCleanALL()
@@ -527,7 +528,7 @@ namespace nsStockManage
             Program.mw.textBox_toolsReturn_area.Text = "";
             Program.mw.textBox_toolsReturn_shelf.Text = "";
             Program.mw.textBox_toolsReturn_layer.Text = "";
-            Program.mw.textBox_toolsReturn_number.Text = "";
+            Program.mw.textBox_toolsReturn_toolName.Text = "";
             Program.mw.textBox_toolsReturn_code.Text = "";
             Program.mw.textBox_toolsReturn_remarks.Text = "";
             Program.mw.textBox_toolsReturnOperator_name.Text = "";
@@ -579,6 +580,95 @@ namespace nsStockManage
                 Program.mw.textBox_toolsReturn_operator.ForeColor = Color.Gray;
                 Program.mw.textBox_toolsReturn_operator.TextAlign = HorizontalAlignment.Right;
             }
+        }
+        /********************************************************维修入库界面******************************************************/
+        //清除功能
+        public void toolsRepairCleanALL()
+        {
+            Program.mw.textBox_repairtoolsIn_code.Text = "";
+            Program.mw.textBox_repairtoolsIn_toolName.Text = "";
+            Program.mw.comboBox_repairtoolsIn_functionState.Text = "正常";
+            Program.mw.textBox_repairtoolsIn_remarks.Text = "";
+            
+            Program.mw.textBox_repairtoolsIn_manufacturer.Text = "";
+            Program.mw.dateTimePicker_repairtoolsIn_repairDate.ResetText();
+            Program.mw.comboBox_repairtoolsIn_lifetype.Text = "时间";
+            Program.mw.textBox_repairtoolsIn_area.Text = "";
+            Program.mw.textBox_repairtoolsIn_layer.Text = "";
+            Program.mw.textBox_repairtoolsIn_shelf.Text = "";
+            Program.mw.textBox_repairtoolsIn_materialNumber.Text = "";
+            Program.mw.textBox_repairtoolsIn_lifespan.Text = "天 ";
+            Program.mw.textBox_repairtoolsIn_lifespan.ForeColor = Color.Gray;
+            Program.mw.textBox_repairtoolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+            Program.mw.textBox_repairtoolsIn_repairTimes.Text = "";
+            Program.mw.textBox_repairtoolsIn_repairTimes.Text = "";
+            Program.mw.textBox_repairtoolsIn_name.Text = "";
+            Program.mw.textBox_repairtoolsIn_contact.Text = "";
+            Program.mw.textBox_repairtoolsIn_operator.Text = "员工编号 ";
+            Program.mw.textBox_repairtoolsIn_operator.ForeColor = Color.Gray;
+            Program.mw.textBox_repairtoolsIn_operator.TextAlign = HorizontalAlignment.Right;
+        }
+        public void textBox_repairtoolsIn_operator_Leave()
+        {
+            if (String.IsNullOrEmpty(Program.mw.textBox_repairtoolsIn_operator.Text))
+            {
+                Program.mw.textBox_repairtoolsIn_operator.Text = "员工编号 ";
+                Program.mw.textBox_repairtoolsIn_operator.ForeColor = Color.Gray;
+                Program.mw.textBox_repairtoolsIn_operator.TextAlign = HorizontalAlignment.Right;
+            }
+        }
+        public void textBox_repairtoolsIn_operator_Enter()
+        {
+            if (Program.mw.textBox_repairtoolsIn_operator.Text == "员工编号 ")
+            {
+                Program.mw.textBox_repairtoolsIn_operator.Text = "";
+                Program.mw.textBox_repairtoolsIn_operator.ForeColor = Color.Black;
+                Program.mw.textBox_repairtoolsIn_operator.TextAlign = HorizontalAlignment.Left;
+            }
+        }
+        public void textBox_repairtoolsIn_lifespan_Enter()
+        {
+            if (Program.mw.comboBox_repairtoolsIn_lifetype.Text == "时间")
+            {
+                if (Program.mw.textBox_repairtoolsIn_lifespan.Text == "天 ")
+                {
+                    Program.mw.textBox_repairtoolsIn_lifespan.Text = "";
+                    Program.mw.textBox_repairtoolsIn_lifespan.ForeColor = Color.Black;
+                    Program.mw.textBox_repairtoolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
+                }
+            }
+            else
+            {
+                if (Program.mw.textBox_repairtoolsIn_lifespan.Text == "次 ")
+                {
+                    Program.mw.textBox_repairtoolsIn_lifespan.Text = "";
+                    Program.mw.textBox_repairtoolsIn_lifespan.ForeColor = Color.Black;
+                    Program.mw.textBox_repairtoolsIn_lifespan.TextAlign = HorizontalAlignment.Left;
+                }
+            } 
+        }
+        public void textBox_repairtoolsIn_lifespan_Leave()
+        {
+            if(Program.mw.comboBox_repairtoolsIn_lifetype.Text == "时间")
+            {
+                if (String.IsNullOrEmpty(Program.mw.textBox_repairtoolsIn_lifespan.Text))
+                {
+                    Program.mw.textBox_repairtoolsIn_lifespan.Text = "天 ";
+                    Program.mw.textBox_repairtoolsIn_lifespan.ForeColor = Color.Gray;
+                    Program.mw.textBox_repairtoolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+                }
+            }
+            else
+            {
+                if (String.IsNullOrEmpty(Program.mw.textBox_repairtoolsIn_lifespan.Text))
+                {
+                    Program.mw.textBox_repairtoolsIn_lifespan.Text = "次 ";
+                    Program.mw.textBox_repairtoolsIn_lifespan.ForeColor = Color.Gray;
+                    Program.mw.textBox_repairtoolsIn_lifespan.TextAlign = HorizontalAlignment.Right;
+                }
+            }
+
+  
         }
     }
 }

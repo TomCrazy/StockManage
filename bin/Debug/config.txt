@@ -1,0 +1,10 @@
+[ServerIP]
+localhost
+[MysqlDatabase]
+toolmanage
+[MysqlUser]
+jiang
+[MysqlPassword]
+1234
+[TerminalNumber]
+客户端2
